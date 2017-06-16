@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.7.0.xsd">
+
+
+	<context:component-scan base-package="com.lmstudio.common.mq"></context:component-scan>
+
+	<!-- ActiveMQ 连接工厂 -->
+	<!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供 -->
+	<!-- 如果连接网络：tcp://ip:61616；未连接网络：tcp://localhost:61616 以及用户名，密码;  对PERSISTENT的消息进行同步发送-->
+	<amq:connectionFactory id="amqConnectionFactory"
+		brokerURL="tcp://127.0.0.1:61616" userName="admin" password="admin" useAsyncSend="false"/>
+
+	<!-- Spring Caching连接工厂 -->
+	<bean id="connectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+		<property name="targetConnectionFactory" ref="amqConnectionFactory"></property>
+		<!-- Session缓存数量 -->
+		<property name="sessionCacheSize" value="100" />
+	</bean>
+
+	<bean id="activeMQTestQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>testQueue</value>
+		</constructor-arg>
+	</bean>
+
+	<!-- 同步工具类 -->
+	<bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<constructor-arg ref="connectionFactory" />
+		<!-- 非pub/sub模型（发布/订阅），即队列模式 -->
+		<property name="pubSubDomain" value="false" />
+		<!-- 使 deliveryMode, priority, timeToLive(默认无限制)设置生效 -->
+		<property name="explicitQosEnabled" value="true" />
+		<!-- 设置NON_PERSISTENT模式, 默认为PERSISTENT -->
+		<property name="deliveryPersistent" value="true" />
+		<!-- 设置优先级, 默认为4 -->
+		<property name="priority" value="9" />
+	</bean>
+
+	<bean id="testMessageListener" class="com.lmstudio.common.mq.MessageReceiveListener" />
+
+	<!-- 异步接收Queue消息Container -->
+	<bean id="advancedQueueContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="activeMQTestQueue" />
+		<property name="messageListener" ref="testMessageListener" />
+		<!-- 初始5个Consumer, 可动态扩展到10 -->
+		<property name="concurrentConsumers" value="5" />
+		<property name="maxConcurrentConsumers" value="10" />
+		<!-- 设置消息确认模式为Client -->
+		<property name="sessionAcknowledgeModeName" value="CLIENT_ACKNOWLEDGE" />
+	</bean>
+
+
+</beans>
