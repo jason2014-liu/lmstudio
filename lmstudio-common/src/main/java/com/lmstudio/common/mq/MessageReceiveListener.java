@@ -26,6 +26,11 @@ public class MessageReceiveListener implements MessageListener {
 	@Override
 	public void onMessage(Message message) {
 		// TODO Auto-generated method stub
+		
+		/**使用线程池多线程处理
+				threadPoolTaskExecutor.execute(new Runnable() {
+					public void run() {}
+					*/
 
 		if (message instanceof TextMessage) {
 			// 这里我们知道生产者发送的就是一个纯文本消息，所以这里可以直接进行强制转换，或者直接把onMessage方法的参数改成Message的子类TextMessage
