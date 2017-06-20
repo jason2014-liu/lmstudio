@@ -7,8 +7,6 @@
 	<!-- 全局配置 -->
 	<settings>
 		<setting name="cacheEnabled" value="false"/>
-		<!-- 指定日志框架为LOG4J2 -->  
-        <setting name="logImpl" value="LOG4J2" />
 	</settings>
 
 	<!-- 插件-->
