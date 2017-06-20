@@ -40,12 +40,12 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public PageInfo<User> queryUserByPage(String userName, Integer pageNum, Integer pageSize) {
+	public PageInfo<User> queryUserByPage(User user, Integer pageNum, Integer pageSize) {
 		// TODO Auto-generated method stub
 		pageNum = pageNum == null ? 1 : pageNum;
 		pageSize = pageSize == null ? 10 : pageSize;
 		PageHelper.startPage(pageNum, pageSize);
-		List<User> userList = userMapper.selectByName(userName);
+		List<User> userList = userMapper.selectByPage(user);
 		PageInfo<User> pageInfo = new PageInfo(userList);
 		
 		return pageInfo;

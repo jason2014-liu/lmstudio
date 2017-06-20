@@ -23,5 +23,5 @@ public interface IUserService {
 
 	User getUserById(String userId);
 
-	PageInfo<User> queryUserByPage(String userName, Integer pageNum, Integer pageSize);
+	PageInfo<User> queryUserByPage(User user, Integer pageNum, Integer pageSize);
 }

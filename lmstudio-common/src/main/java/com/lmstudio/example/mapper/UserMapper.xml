@@ -17,11 +17,16 @@
 		from t_user
 		where user_id = #{userId,jdbcType=CHAR}
 	</select>
-	<select id="selectByName" parameterType="java.lang.String"
+	<select id="selectByPage" parameterType="com.lmstudio.example.domain.User"
 		resultMap="BaseResultMap">
+		<bind name="pattern" value="'%' + _parameter.userName + '%'" />
 		select 
 		<include refid="Base_Column_List" />
 		from t_user
+		where 1=1
+		<if test="userName != null">
+			and user_name like #{pattern}
+		</if>
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 		delete from t_user

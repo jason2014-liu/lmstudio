@@ -52,8 +52,11 @@ public class UserServiceTest {
 
 	@Test
 	public void testQueryUserByPage(){
+		User param = new User();
+		//param.setUserId("001");
+		param.setUserName("幺狗");
 		
-		PageInfo<User> page = userService.queryUserByPage("幺狗", 1, 2);
+		PageInfo<User> page = userService.queryUserByPage(param, 1, 2);
 		
 		System.out.println(page.toString());
 		List<User> userList = page.getList();
