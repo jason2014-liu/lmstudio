@@ -1,17 +1,21 @@
 package com.lmstudio.example.dao;
 
+import java.util.List;
+
 import com.lmstudio.example.domain.User;
 
 public interface UserMapper {
-    int deleteByPrimaryKey(String userId);
+	int deleteByPrimaryKey(String userId);
 
-    int insert(User record);
+	int insert(User record);
 
-    int insertSelective(User record);
+	int insertSelective(User record);
 
-    User selectByPrimaryKey(String userId);
+	User selectByPrimaryKey(String userId);
 
-    int updateByPrimaryKeySelective(User record);
+	List<User> selectByName(String userName);
 
-    int updateByPrimaryKey(User record);
+	int updateByPrimaryKeySelective(User record);
+
+	int updateByPrimaryKey(User record);
 }
