@@ -6,7 +6,10 @@
 
 	<!-- 全局配置 -->
 	<settings>
+		<!-- 
 		<setting name="cacheEnabled" value="false"/>
+		 -->
+		<setting name="logImpl" value="LOG4J2" />
 	</settings>
 
 	<!-- 插件-->
