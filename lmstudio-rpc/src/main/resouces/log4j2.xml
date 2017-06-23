@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status=debug 可以查看log4j的装配过程 -->
+<configuration status="off" monitorInterval="1800">
+    <properties>
+    
+        <property name="LOG_PATH">/home/weblobic/logs</property> 
+        <property name="LOG_NAME">lmstudio-rpc</property>
+    </properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout
+                pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+        </Console>
+        <RollingRandomAccessFile name="ProductionLog"
+            fileName="${LOG_PATH}/${LOG_NAME}.log" filePattern="${LOG_PATH}/${LOG_NAME}.%d{yyyy-MM-dd}.log">
+            <PatternLayout
+                pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"
+                    modulate="true" />
+            </Policies>
+        </RollingRandomAccessFile>
+    </appenders>
+    <loggers>
+        <root level="debug">
+            <appender-ref ref="ProductionLog" />
+            <appender-ref ref="Console" />
+        </root>
+        <logger name="com.lmstudio.rpc" level="debug" />
+        <logger name="org.springframework.beans" level="error" />
+        <logger name="org.springframework.context" level="error" />
+    </loggers>
+</configuration>
