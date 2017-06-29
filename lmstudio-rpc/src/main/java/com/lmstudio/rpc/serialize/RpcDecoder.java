@@ -12,6 +12,9 @@ package com.lmstudio.rpc.serialize;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.lmstudio.rpc.model.RpcRequest;
 
 import io.netty.buffer.ByteBuf;
@@ -25,6 +28,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
  * @author jason
  */
 public class RpcDecoder extends ByteToMessageDecoder {
+	
+	private static Logger logger = LoggerFactory.getLogger(RpcDecoder.class);
 
 	private Class<?> genericClass;
 
@@ -36,6 +41,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		// TODO Auto-generated method stub
 
+		logger.debug("-----------开始decode接收到的数据--------");
 		if (in.readableBytes() < 4) {
 			return;
 		}

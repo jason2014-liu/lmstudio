@@ -52,7 +52,7 @@ public class RpcHandler extends SimpleChannelInboundHandler<RpcRequest> {
 			response.setError(t.toString());
 			logger.error("RPC Server handle request error", t);
 		}
-		ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
+		ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE).addListener(new ChannelFutureListener() {
 			@Override
 			public void operationComplete(ChannelFuture channelFuture) throws Exception {
 				logger.debug("Send response for request " + request.getRequestId());
@@ -69,6 +69,8 @@ public class RpcHandler extends SimpleChannelInboundHandler<RpcRequest> {
 		Class<?>[] parameterTypes = request.getParameterTypes();
 		Object[] parameters = request.getParameters();
 
+		logger.debug("服务端接收到的请求参数：interfaceName={},methodName={}", className, methodName);
+
 		// JDK reflect
 		Method method = serviceClass.getMethod(methodName, parameterTypes);
 		method.setAccessible(true);
@@ -79,6 +81,12 @@ public class RpcHandler extends SimpleChannelInboundHandler<RpcRequest> {
 		// FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName,
 		// parameterTypes);
 		// return serviceFastMethod.invoke(serviceBean, parameters);
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		logger.error("server caught exception", cause);
+		ctx.close();
 	}
 
 }

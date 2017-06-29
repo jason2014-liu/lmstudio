@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.lmstudio.rpc.model.RpcRequest;
+import com.lmstudio.rpc.model.RpcResponse;
 import com.lmstudio.rpc.serialize.RpcDecoder;
 import com.lmstudio.rpc.serialize.RpcEncoder;
 
@@ -33,6 +34,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
 * TODO
@@ -43,7 +46,7 @@ public class RpcServer implements ApplicationContextAware,InitializingBean{
 	
 	private static Logger logger = LoggerFactory.getLogger(RpcServer.class);
 	
-	private static int port = 8099;
+	private static int port = 18888;
 	
 	/**
 	 * 接口名与实例Bean对应关系
@@ -62,9 +65,10 @@ public class RpcServer implements ApplicationContextAware,InitializingBean{
 	                        @Override
 	                        public void initChannel(SocketChannel channel) throws Exception {
 	                            channel.pipeline()
+	                            		.addLast(new LoggingHandler(LogLevel.DEBUG))
 	                                    .addLast(new LengthFieldBasedFrameDecoder(65536,0,4,0,0))
 	                                    .addLast(new RpcDecoder(RpcRequest.class))
-	                                    .addLast(new RpcEncoder())
+	                                    .addLast(new RpcEncoder(RpcResponse.class))
 	                                    .addLast(new RpcHandler(handlerMap));
 	                        }
 	                    })
@@ -90,6 +94,8 @@ public class RpcServer implements ApplicationContextAware,InitializingBean{
             for (Object serviceBean : serviceBeanMap.values()) {
                 String interfaceName = serviceBean.getClass().getAnnotation(RpcService.class).value().getName();
                 handlerMap.put(interfaceName, serviceBean);
+                
+                logger.debug("扫描到的rpcService注解：{}",serviceBean.getClass().getName());
             }
         }
 	}

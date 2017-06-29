@@ -10,26 +10,34 @@
 */
 package com.lmstudio.rpc.serialize;
 
-import com.lmstudio.rpc.model.RpcResponse;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
-* TODO
-* @ClassName: RpcEncoder
-* @author jason
-*/
-public class RpcEncoder extends MessageToByteEncoder<RpcResponse> {
+ * TODO
+ * 
+ * @ClassName: RpcEncoder
+ * @author jason
+ */
+public class RpcEncoder extends MessageToByteEncoder {
+
+	private Class<?> genericClass;
+
+	public RpcEncoder(Class<?> genericClass) {
+		this.genericClass = genericClass;
+	}
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, RpcResponse msg, ByteBuf out) throws Exception {
+	protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
 		// TODO Auto-generated method stub
-		byte[] data = SerializeUtils.serialize(msg);
-        //byte[] data = JsonUtil.serialize(in); // Not use this, have some bugs
-        out.writeInt(data.length);
-        out.writeBytes(data);
+		if (genericClass.isInstance(msg)) {
+			byte[] data = SerializeUtils.serialize(msg);
+			// byte[] data = JsonUtil.serialize(in); // Not use this, have some
+			// bugs
+			out.writeInt(data.length);
+			out.writeBytes(data);
+		}
 	}
 
 }
