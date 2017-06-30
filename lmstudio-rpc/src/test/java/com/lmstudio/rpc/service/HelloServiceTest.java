@@ -25,7 +25,8 @@ public class HelloServiceTest {
 	public void testSayHello(){
 		System.out.println("------------开始远程调用测试---------------");
 		HelloService helloService = RpcClientProxyBuilder.buildProxy(HelloService.class);
-		String result = helloService.sayHello("中国");
+		//String result = helloService.sayHello("中国");
+		HelloObj result = helloService.transferObj(new HelloObj("老王","你好"));
 		System.out.println(result);
 		try {
 			Thread.sleep(3600000);

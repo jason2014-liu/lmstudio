@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +26,14 @@ import com.lmstudio.rpc.model.RpcRequest;
 * @ClassName: RpcClientProxy
 * @author jason
 */
-public class RpcClientProxy<T> implements InvocationHandler {
+public class RpcClientProxy<T> implements InvocationHandler ,IAsyncObjectProxy {
 	
 	private static Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 	
 	private Class<T> interfaceClass;
 	
-	private static long DEFAULT_TIMEOUT = 30000L;
 	
 	public RpcClientProxy(Class<T> interfaceClass) {
-		super();
 		this.interfaceClass = interfaceClass;
 	}
 
@@ -87,7 +86,15 @@ public class RpcClientProxy<T> implements InvocationHandler {
         RpcClientHandler hander =ChannelFactory.getInstance().getClientHandler(node);
         
 		RpcResult result = hander.sendRequest(request);
-		return result.getResult();
+		return result.get(3000,TimeUnit.MILLISECONDS);
+	}
+
+
+
+	@Override
+	public RpcResult call(String methodName, Object... args) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

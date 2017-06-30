@@ -19,10 +19,13 @@ import java.lang.reflect.Proxy;
 */
 public class RpcClientProxyBuilder {
 
-	
+	@SuppressWarnings("unchecked")
 	public static <T> T buildProxy(Class<T> interfaceClass){
-		return (T)Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass}, new RpcClientProxy(interfaceClass));
+		return (T)Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass}, new RpcClientProxy<T>(interfaceClass));
 	}
 	
+	public static <T> IAsyncObjectProxy buildAsyncProxy(Class<T> interfaceClass){
+		return new RpcClientProxy<T>(interfaceClass);
+	}
 	
 }

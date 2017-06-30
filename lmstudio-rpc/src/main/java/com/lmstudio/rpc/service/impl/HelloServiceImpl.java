@@ -11,6 +11,7 @@
 package com.lmstudio.rpc.service.impl;
 
 import com.lmstudio.rpc.server.RpcService;
+import com.lmstudio.rpc.service.HelloObj;
 import com.lmstudio.rpc.service.HelloService;
 
 /**
@@ -25,6 +26,19 @@ public class HelloServiceImpl implements HelloService {
 	public String sayHello(String name) {
 		// TODO Auto-generated method stub
 		return "你好，"+name;
+	}
+
+	@Override
+	public HelloObj transferObj(HelloObj obj) {
+		// TODO Auto-generated method stub
+		obj.setName(obj.getName()+"response");
+//		try {
+//			Thread.sleep(4000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		return obj;
 	}
 
 }

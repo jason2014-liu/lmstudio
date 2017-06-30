@@ -18,4 +18,6 @@ package com.lmstudio.rpc.service;
 public interface HelloService {
 
 	String sayHello(String name);
+	
+	HelloObj transferObj(HelloObj obj);
 }
