@@ -95,6 +95,9 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 		if(rpcResult != null){
 			logger.debug("请求ID为{}的返回结果是：{}",msg.getRequestId(),msg.getResult());
 			rpcResult.setResponse(msg);
+			if(!rpcResult.getCallbacks().isEmpty()){
+				rpcResult.invokeCallbacks();
+			}
 		}else{
 			logger.debug("没有找到请求ID={}的结果数据,出现异常",msg.getRequestId());
 		}

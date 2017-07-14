@@ -12,7 +12,10 @@ package com.lmstudio.rpc.service;
 
 import org.junit.Test;
 
+import com.lmstudio.rpc.client.AsyncRpcCallback;
+import com.lmstudio.rpc.client.IAsyncObjectProxy;
 import com.lmstudio.rpc.client.RpcClientProxyBuilder;
+import com.lmstudio.rpc.client.RpcResult;
 
 /**
 * TODO
@@ -24,10 +27,31 @@ public class HelloServiceTest {
 	@Test
 	public void testSayHello(){
 		System.out.println("------------开始远程调用测试---------------");
-		HelloService helloService = RpcClientProxyBuilder.buildProxy(HelloService.class);
+//		HelloService helloService = RpcClientProxyBuilder.buildProxy(HelloService.class);
 		//String result = helloService.sayHello("中国");
-		HelloObj result = helloService.transferObj(new HelloObj("老王","你好"));
-		System.out.println(result);
+//		HelloObj result = helloService.transferObj(new HelloObj("老王","你好"));
+//		System.out.println(result);
+		
+		
+		IAsyncObjectProxy proxy = RpcClientProxyBuilder.buildAsyncProxy(HelloService.class);
+		
+		RpcResult rpcResult = proxy.call("transferObj",new HelloObj("老王","你好"));
+		rpcResult.addCallback(new AsyncRpcCallback() {
+			
+			@Override
+			public void success(Object obj) {
+				// TODO Auto-generated method stub
+				System.out.println("异步调用成功，"+obj);
+			}
+			
+			@Override
+			public void fail(Exception e) {
+				// TODO Auto-generated method stub
+				System.out.println("异步调用失败，"+e.getMessage());
+			}
+		});
+		
+		
 		try {
 			Thread.sleep(3600000);
 		} catch (InterruptedException e) {
