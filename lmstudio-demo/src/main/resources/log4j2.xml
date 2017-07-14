@@ -23,9 +23,12 @@
     </appenders>
     <loggers>
         <root level="debug">
+        	<!-- 
             <appender-ref ref="ProductionLog" />
+             -->
             <appender-ref ref="Console" />
         </root>
+        <!-- 
         <logger name="org.springframework.core" level="error" />
         <logger name="org.springframework.beans" level="error" />
         <logger name="org.springframework.context" level="error" />
@@ -40,5 +43,6 @@
         <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="debug" />
         <logger name="com.ibatis" level="debug" />
         <logger name="org.apache.http" level="debug" />
+         -->
     </loggers>
 </configuration>
