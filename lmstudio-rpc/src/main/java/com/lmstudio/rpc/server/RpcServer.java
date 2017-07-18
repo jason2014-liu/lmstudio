@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import com.lmstudio.rpc.model.RpcRequest;
 import com.lmstudio.rpc.model.RpcResponse;
+import com.lmstudio.rpc.registry.ServiceRegistry;
 import com.lmstudio.rpc.serialize.RpcDecoder;
 import com.lmstudio.rpc.serialize.RpcEncoder;
 
@@ -46,8 +47,14 @@ public class RpcServer implements ApplicationContextAware,InitializingBean{
 	
 	private static Logger logger = LoggerFactory.getLogger(RpcServer.class);
 	
-	private static int port = 18888;
+	private String serverAddress;
+	private ServiceRegistry registry;
 	
+	public RpcServer(String serverAddress, ServiceRegistry registry) {
+		this.serverAddress = serverAddress;
+		this.registry = registry;
+	}
+
 	/**
 	 * 接口名与实例Bean对应关系
 	 */
@@ -74,10 +81,17 @@ public class RpcServer implements ApplicationContextAware,InitializingBean{
 	                    })
 	                    .option(ChannelOption.SO_BACKLOG, 128)
 	                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+	            
+	            String[] array = serverAddress.split(":");
+	            String host = array[0];
+	            int port = Integer.parseInt(array[1]);
 
-
-	            ChannelFuture future = bootstrap.bind(port).sync();
+	            ChannelFuture future = bootstrap.bind(host,port).sync();
 	            logger.debug("Server started on port {}", port);
+	            
+	            if(registry != null){
+	            	registry.register(serverAddress);
+	            }
 
 	            future.channel().closeFuture().sync();
 	        } finally {

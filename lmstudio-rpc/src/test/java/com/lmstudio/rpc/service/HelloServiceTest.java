@@ -16,6 +16,7 @@ import com.lmstudio.rpc.client.AsyncRpcCallback;
 import com.lmstudio.rpc.client.IAsyncObjectProxy;
 import com.lmstudio.rpc.client.RpcClientProxyBuilder;
 import com.lmstudio.rpc.client.RpcResult;
+import com.lmstudio.rpc.registry.ServiceDiscovery;
 
 /**
 * TODO
@@ -60,4 +61,11 @@ public class HelloServiceTest {
 		}
 		
 	}
+	
+	//@Test
+	public void testDiscovery(){
+		ServiceDiscovery discovery = new ServiceDiscovery("127.0.0.1:2181");
+	}
+	
+	
 }

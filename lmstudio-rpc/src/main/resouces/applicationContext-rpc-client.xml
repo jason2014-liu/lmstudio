@@ -10,4 +10,7 @@
 	
 	<bean id="channelFactory" class="com.lmstudio.rpc.client.ChannelFactory"></bean>
 
+	<bean id="serverDiscovery" class="com.lmstudio.rpc.registry.ServiceDiscovery">
+		<constructor-arg name="registryAddress" value="${registry.address}"></constructor-arg>
+	</bean>
 </beans>

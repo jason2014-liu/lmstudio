@@ -50,35 +50,6 @@ public class RpcClientProxy<T> implements InvocationHandler, IAsyncObjectProxy {
 
 		logger.debug("客户端发起请求，参数为 interfaceName={},methodName={}", request.getInterfaceName(), request.getMethodName());
 
-		// Channel channel =
-		// ChannelFactory.getInstance().getChannel(ChannelFactory.DEFAULT_NODE);
-
-		// if(channel == null){
-		// logger.debug("channel is null");
-		// }
-
-		// EventLoopGroup workerGroup = new NioEventLoopGroup();
-		// Bootstrap b = new Bootstrap();
-		// b.group(workerGroup);
-		// b.channel(NioSocketChannel.class);
-		// //b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
-		// b.option(ChannelOption.SO_KEEPALIVE, true);
-		// b.handler(new ChannelInitializer<SocketChannel>() {
-		// @Override
-		// public void initChannel(SocketChannel ch) throws Exception {
-		// ChannelPipeline cp = ch.pipeline();
-		// cp.addLast(new LoggingHandler(LogLevel.DEBUG));
-		// cp.addLast(new RpcEncoder(RpcRequest.class));
-		// cp.addLast(new LengthFieldBasedFrameDecoder(65536, 0, 4, 0, 0));
-		// cp.addLast(new RpcDecoder(RpcResponse.class));
-		// cp.addLast(new RpcClientHandler());
-		// }
-		// });
-		//
-		// ChannelFuture f = b.connect("127.0.0.1", 18888).sync();
-		//
-
-		// ChannelFuture cfuture = f.channel().writeAndFlush(request);
 		InetSocketAddress node = new InetSocketAddress("127.0.0.1", 18888);
 
 		RpcClientHandler hander = ChannelFactory.getInstance().getClientHandler(node);

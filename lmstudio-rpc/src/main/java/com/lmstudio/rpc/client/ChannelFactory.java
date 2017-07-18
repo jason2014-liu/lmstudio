@@ -11,7 +11,7 @@
 package com.lmstudio.rpc.client;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,13 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import com.lmstudio.rpc.model.RpcRequest;
 import com.lmstudio.rpc.model.RpcResponse;
+import com.lmstudio.rpc.registry.ServiceDiscovery;
 import com.lmstudio.rpc.serialize.RpcDecoder;
 import com.lmstudio.rpc.serialize.RpcEncoder;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -50,14 +49,11 @@ public class ChannelFactory {
 
 	private static ChannelFactory channeFactory = new ChannelFactory();// 单例
 
-	public  InetSocketAddress default_node = null;
-
 	private Map<InetSocketAddress, RpcClientHandler> connectedServerNodes = new ConcurrentHashMap<>();
 
-	private Map<InetSocketAddress, Channel> channels = new ConcurrentHashMap<InetSocketAddress, Channel>();
+	private ServiceDiscovery discovery = new ServiceDiscovery("127.0.0.1:2181");
 
 	public ChannelFactory() {
-		default_node = new InetSocketAddress("127.0.0.1", 18888);
 		/**
 		 * 初始化连接
 		 */
@@ -69,6 +65,22 @@ public class ChannelFactory {
 	}
 
 	private void init() {
+		
+		List<String> nodes = discovery.getDataList();
+		if(nodes != null){
+			for(String node : nodes){
+				String[] str = node.split(":");
+				connectServerNodes(new InetSocketAddress(str[0], Integer.parseInt(str[1])));
+			}
+		}else{
+			logger.info("zookeeper中没有发现rpc service 数据");
+		}
+
+
+	}
+	
+	private void connectServerNodes(InetSocketAddress address ){
+		
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup);
@@ -88,46 +100,16 @@ public class ChannelFactory {
 		});
 		
 		try {
-			ChannelFuture f = b.connect(default_node).sync();
-			connectedServerNodes.put(default_node, f.channel().pipeline().get(RpcClientHandler.class));
+			ChannelFuture f = b.connect(address).sync();
+			
+			logger.debug("连接上rpc server {}",address);
+			
+			connectedServerNodes.put(address, f.channel().pipeline().get(RpcClientHandler.class));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-
-//		ChannelFuture f = b.connect(DEFAULT_NODE);
-//
-//		f.addListener(new ChannelFutureListener() {
-//			@Override
-//			public void operationComplete(ChannelFuture cfuture) throws Exception {
-//
-//				if (cfuture.isSuccess()) {
-//					logger.debug("客户端成功连接到服务端{}", DEFAULT_NODE.toString());
-//					channels.put(DEFAULT_NODE, cfuture.channel());
-//					connectedServerNodes.put(DEFAULT_NODE, cfuture.channel().pipeline().get(RpcClientHandler.class));
-//				} else {
-//					logger.debug("客户端连接到服务端{}出现异常", DEFAULT_NODE.toString());
-//					cfuture.channel().pipeline().fireExceptionCaught(cfuture.cause());
-//				}
-//
-//			}
-//
-//		});
-//
-//		f.addListener(ChannelFutureListener.CLOSE);
-
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @Title: getChannel
-	 * @param ip
-	 * @return
-	 */
-	public Channel getChannel(InetSocketAddress addr) {
-		return channels.get(addr);
 	}
 
 	public RpcClientHandler getClientHandler(InetSocketAddress addr) {

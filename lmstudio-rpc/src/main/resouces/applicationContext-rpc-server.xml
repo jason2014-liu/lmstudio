@@ -7,5 +7,15 @@
 	<context:component-scan base-package="com.lmstudio.rpc.service.*"></context:component-scan>
 
 	<context:property-placeholder location="classpath:rpc-server.properties" />
-	<bean id="rpcServer" class="com.lmstudio.rpc.server.RpcServer"></bean>
+	
+	<bean id="rpcRegistry" class="com.lmstudio.rpc.registry.ServiceRegistry">
+		<constructor-arg name="registryAddress" value="${registry.address}"></constructor-arg>
+	</bean>
+	
+	<bean id="rpcServer" class="com.lmstudio.rpc.server.RpcServer">
+		<constructor-arg name="registry" ref="rpcRegistry"></constructor-arg>
+		<constructor-arg name="serverAddress" value="${server.address}"></constructor-arg>
+	</bean>
+	
+	
 </beans>
